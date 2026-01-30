@@ -45,7 +45,8 @@ SAMPLE_RATE = 44100
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 API_TIMEOUT = 30  # seconds
 MAX_RECORDING_SECONDS = 300  # 5-minute safety failsafe
-HOTKEY = keyboard.Key.ctrl_l  # Use Left Control (Universal, non-intrusive)
+HOTKEY_COMBO = {keyboard.Key.cmd_r, keyboard.Key.alt_r}  # Right Command + Right Option
+current_pressed_keys = set()
 
 class VoiceRecorder:
     def __init__(self):
@@ -248,21 +249,23 @@ recorder = VoiceRecorder()
 
 def on_press(key):
     try:
-        if key == HOTKEY:
-            # Check if already recording to avoid "key repeat" triggers
-            with recorder.lock:
-                is_active = recorder.recording or recorder.transcribing
+        if key in HOTKEY_COMBO:
+            current_pressed_keys.add(key)
+            if all(k in current_pressed_keys for k in HOTKEY_COMBO):
+                # Check if already recording to avoid "key repeat" triggers
+                with recorder.lock:
+                    is_active = recorder.recording or recorder.transcribing
 
-            if not is_active:
-                print("\nStarted recording...")
-                recorder.start_recording()
+                if not is_active:
+                    print("\nStarted recording...")
+                    recorder.start_recording()
     except Exception as e:
         print(f"Error on key press: {e}")
 
 
 def on_release(key):
     try:
-        if key == HOTKEY:
+        if key in HOTKEY_COMBO:
             if recorder.recording:
                 audio = recorder.stop_recording()
                 if audio is not None and len(audio) > 0:
@@ -270,6 +273,9 @@ def on_release(key):
                     recorder.transcribe_async(audio)
                 else:
                     print("No audio captured")
+            
+            if key in current_pressed_keys:
+                current_pressed_keys.remove(key)
     except Exception:
         pass
 
@@ -277,7 +283,7 @@ def on_release(key):
 def main():
     print("=" * 50)
     print("  Voice to Text (macOS)")
-    print("  Hold LEFT CONTROL to record")
+    print("  Hold RIGHT COMMAND + RIGHT OPTION to record")
     print("  Release to paste")
     print("  Press Ctrl+C to quit")
     print("=" * 50)
