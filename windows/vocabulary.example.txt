@@ -1,0 +1,45 @@
+# Example Custom Vocabulary File for Voice to Text
+#
+# Add words, phrases, and technical terms that you want Whisper to recognize better.
+# Format: One term per line, or comma-separated on a single line.
+#
+# This file helps Whisper understand:
+# - Programming syntax keywords
+# - Project-specific terminology
+# - Industry jargon
+# - Proper nouns / brand names
+#
+# Copy this file to 'vocabulary.txt' in the same directory to use it.
+# Or pass --vocabulary /path/to/file to load a custom vocabulary file.
+
+# Python keywords and syntax
+Python, Python3, async, await, def, class, import, from, return
+list, dict, set, tuple, enumerate, lambda, decorator, underscore
+f-string, f-strings, kwargs, args, venv, virtualenv, pip
+
+# JavaScript / TypeScript keywords
+JavaScript, TypeScript, const, let, var, async, await, arrow function
+spread operator, destructuring, prototype, this, super, extends
+npm, node, webpack, TypeScript, JSX, TSX
+
+# Web development
+React, Vue, Angular, Next.js, Svelte, GraphQL, REST API
+JSON, XML, YAML, TOML, markdown, HTML, CSS, SCSS, LESS
+
+# Database
+SQL, PostgreSQL, MySQL, MongoDB, Redis, DynamoDB, SQLite
+query, index, schema, migration, aggregate, transaction
+
+# DevOps / Cloud
+Docker, Kubernetes, AWS, Azure, GCP, CI/CD, GitHub, GitLab
+container, pod, service, ingress, load balancer, lambda, EC2
+SNS, SQS, RDS, CloudFormation, Terraform
+
+# General development
+Git, GitHub, GitLab, commit, push, pull, merge, rebase, stash
+API, endpoint, HTTP, HTTPS, REST, GraphQL, WebSocket
+authentication, authorization, JWT, OAuth, session, token
+
+# Your custom terms below
+# Add your project-specific words, company terms, or frequently used phrases:
+

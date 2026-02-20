@@ -1,0 +1,10 @@
+sounddevice
+soundfile
+numpy
+openai
+pyperclip
+pynput
+python-dotenv
+rich
+librosa
+pyloudnorm
