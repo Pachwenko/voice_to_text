@@ -849,7 +849,7 @@ Logs appear below"""
     if args.device is not None:
         selected = args.device
     elif 'device' in config:
-        # Load device from config and validate it still exists with the same name
+        # Load device from config and try to find it
         saved_device = config.get('device')
         saved_device_name = config.get('device_name', '')
 
@@ -862,12 +862,34 @@ Logs appear below"""
                 selected = saved_device
                 logger.info(f"Loaded saved device {saved_device}: {current_name}")
             else:
-                # Device index exists but name changed - warn user
-                logger.warning(f"Saved device #{saved_device} changed from '{saved_device_name}' to '{current_name}'. Using default device instead.")
+                # Device index exists but name changed - warn and try to find by name
+                logger.warning(f"Saved device #{saved_device} name changed from '{saved_device_name}' to '{current_name}'")
                 selected = None
         except Exception as e:
-            logger.warning(f"Saved device #{saved_device} no longer available: {e}. Using default device instead.")
+            # Device ID not found - try to find by name
+            logger.debug(f"Saved device #{saved_device} not available: {e}")
             selected = None
+
+        # If device not found by ID, try to find by name
+        if selected is None and saved_device_name:
+            logger.info(f"Searching for device by name: '{saved_device_name}'")
+            try:
+                devices = sd.query_devices()
+
+                # Search for device with matching name (case-insensitive, partial match)
+                for idx in range(len(devices)):
+                    dev_info = sd.query_devices(idx)
+                    dev_name = dev_info['name'] if isinstance(dev_info, dict) else dev_info['name']
+                    # Check if saved device name is contained in current device name
+                    if saved_device_name.lower() in dev_name.lower():
+                        selected = idx
+                        logger.info(f"Found matching device #{idx}: {dev_name}")
+                        break
+
+                if selected is None:
+                    logger.warning(f"Could not find device matching '{saved_device_name}'. Will prompt user to select.")
+            except Exception as e:
+                logger.debug(f"Error searching for device by name: {e}")
 
     if selected is None and sys.stdin.isatty():
         # interactive fallback
